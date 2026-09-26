@@ -31,9 +31,9 @@ completed lifts — persists across reloads.
 2. **Workout detail pages** — full key-specs panel (equipment, difficulty, sets, reps, duration,
    calories, rating) and numbered instructions for every lift, fetched by dynamic route.
 3. **Today's Plan with a 5-lift cap** — "Add to today's plan" is disabled once the plan is full,
-   with a toast explaining why.
+   with an on-page message explaining how to make room.
 4. **Live metrics summary** — Exercises / Minutes / Calories stat cards update instantly as lifts
-   are added, marked done, or removed.
+   are added to or removed from the plan.
 5. **Saved-for-later list**, **Mark as Done / Undo**, and **Remove** controls, each with a toast
    confirmation, plus a custom 404 page for unknown routes.
 6. **Persistent state** — the plan, saved list, and completed lifts survive a page reload via
