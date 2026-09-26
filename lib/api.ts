@@ -2,6 +2,34 @@ import { FITLOG_API_URL } from "@/lib/constants";
 import type { Workout } from "@/lib/types";
 
 const REVALIDATE_SECONDS = 300;
+const ALTERNATIVE_API_URL = "https://api.api-store.workers.dev/api/fitlog";
+const ORIGINAL_API_URL = "https://api.abcz.workers.dev/api/fitlog";
+
+function getApiUrls(): string[] {
+  return [...new Set([FITLOG_API_URL, ALTERNATIVE_API_URL, ORIGINAL_API_URL])];
+}
+
+function parseWorkoutList(data: unknown): Workout[] {
+  if (Array.isArray(data)) return data as Workout[];
+  if (
+    data &&
+    typeof data === "object" &&
+    Array.isArray((data as { data?: unknown }).data)
+  ) {
+    return (data as { data: Workout[] }).data;
+  }
+  return [];
+}
+
+function parseWorkout(data: unknown): Workout | null {
+  if (!data || typeof data !== "object" || Array.isArray(data)) return null;
+  const wrapped = (data as { data?: unknown }).data;
+  const workout =
+    wrapped && typeof wrapped === "object" && !Array.isArray(wrapped)
+      ? wrapped
+      : data;
+  return workout as Workout;
+}
 
 /**
  * Fetches the whole FitLog library. Never throws: if the API is unreachable
@@ -9,24 +37,21 @@ const REVALIDATE_SECONDS = 300;
  * instead of crashing the page.
  */
 export async function getWorkouts(): Promise<Workout[]> {
-  try {
-    const response = await fetch(FITLOG_API_URL, {
-      next: { revalidate: REVALIDATE_SECONDS },
-    });
+  for (const url of getApiUrls()) {
+    try {
+      const response = await fetch(url, {
+        next: { revalidate: REVALIDATE_SECONDS },
+      });
+      if (!response.ok) continue;
 
-    if (!response.ok) return [];
-
-    const data: unknown = await response.json();
-
-    if (Array.isArray(data)) return data as Workout[];
-    if (data && typeof data === "object" && Array.isArray((data as { data?: unknown }).data)) {
-      return (data as { data: Workout[] }).data;
+      const workouts = parseWorkoutList(await response.json());
+      if (workouts.length > 0) return workouts;
+    } catch (error) {
+      console.error(`FitLog: failed to load workouts from ${url}`, error);
     }
-    return [];
-  } catch (error) {
-    console.error("FitLog: failed to load the workout library", error);
-    return [];
   }
+
+  return [];
 }
 
 /**
@@ -34,20 +59,19 @@ export async function getWorkouts(): Promise<Workout[]> {
  * network failures, which lets the detail page call notFound().
  */
 export async function getWorkoutById(id: string): Promise<Workout | null> {
-  try {
-    const response = await fetch(`${FITLOG_API_URL}/${id}`, {
-      next: { revalidate: REVALIDATE_SECONDS },
-    });
+  for (const url of getApiUrls()) {
+    try {
+      const response = await fetch(`${url}/${encodeURIComponent(id)}`, {
+        next: { revalidate: REVALIDATE_SECONDS },
+      });
+      if (!response.ok) continue;
 
-    if (!response.ok) return null;
-
-    const data: unknown = await response.json();
-
-    if (!data || typeof data !== "object" || Array.isArray(data)) return null;
-
-    return data as Workout;
-  } catch (error) {
-    console.error(`FitLog: failed to load workout ${id}`, error);
-    return null;
+      const workout = parseWorkout(await response.json());
+      if (workout) return workout;
+    } catch (error) {
+      console.error(`FitLog: failed to load workout ${id} from ${url}`, error);
+    }
   }
+
+  return null;
 }

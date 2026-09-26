@@ -50,8 +50,9 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ### Environment variables (optional)
 
-The API base URL defaults to the public FitLog endpoint, so the app runs with zero
-configuration. To point it elsewhere, copy `.env.example` to `.env.local`:
+The API base URL defaults to the alternative FitLog API. The app also tries the other
+provided FitLog API if the selected endpoint is unavailable. To override the endpoint locally,
+copy `.env.example` to `.env.local`:
 
 ```bash
 NEXT_PUBLIC_FITLOG_API_URL=https://api.api-store.workers.dev/api/fitlog
@@ -66,7 +67,12 @@ NEXT_PUBLIC_FITLOG_API_URL=https://api.api-store.workers.dev/api/fitlog
 
 ## 📦 Deployment
 
-Deploy on Vercel, Netlify, or Cloudflare Pages — no build configuration required.
+Deploy on Vercel, Netlify, or Cloudflare Pages. The home page requests workouts at runtime so
+the library is not dependent on API availability during the deployment build.
+
+For Vercel, open **Project → Settings → Environment Variables**, add
+`NEXT_PUBLIC_FITLOG_API_URL` with value `https://api.api-store.workers.dev/api/fitlog` for the
+Production environment, then redeploy so the setting is included in the deployment.
 
 ```bash
 npm run build
