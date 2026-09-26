@@ -20,7 +20,7 @@ completed lifts — persists across reloads.
 - **React 19** + **TypeScript** — UI and type safety
 - **Tailwind CSS** — styling and responsive layout
 - **Lucide React** — icon set
-- **FitLog REST API** (`api.abcz.workers.dev`) — workout data
+- **FitLog REST API** (`api.api-store.workers.dev`) — workout data
 - **localStorage** — persists Today's Plan, Saved, and Done state
 
 ## ✨ Key Features
@@ -54,15 +54,15 @@ The API base URL defaults to the public FitLog endpoint, so the app runs with ze
 configuration. To point it elsewhere, copy `.env.example` to `.env.local`:
 
 ```bash
-NEXT_PUBLIC_FITLOG_API_URL=https://api.abcz.workers.dev/api/fitlog
+NEXT_PUBLIC_FITLOG_API_URL=https://api.api-store.workers.dev/api/fitlog
 ```
 
 ## 🔌 API Reference
 
-| Endpoint | Returns |
-| --- | --- |
-| `GET /api/fitlog` | All workouts as an array |
-| `GET /api/fitlog/:id` | A single workout |
+| Endpoint              | Returns                  |
+| --------------------- | ------------------------ |
+| `GET /api/fitlog`     | All workouts as an array |
+| `GET /api/fitlog/:id` | A single workout         |
 
 ## 📦 Deployment
 

@@ -1,4 +1,4 @@
-/** Shape returned by the FitLog API (https://api.abcz.workers.dev/api/fitlog). */
+/** Shape returned by the FitLog API. */
 export type Workout = {
   id: number | string;
   name: string;
@@ -18,7 +18,8 @@ export type Workout = {
 
 /** Normalizes a workout's category tags regardless of which field the API used. */
 export function getTags(workout: Workout): string[] {
-  if (workout.muscleGroups && workout.muscleGroups.length) return workout.muscleGroups;
+  if (workout.muscleGroups && workout.muscleGroups.length)
+    return workout.muscleGroups;
   if (workout.category && workout.category.length) return workout.category;
   return [];
 }
